@@ -1,40 +1,50 @@
 package org.motechproject.mHealthDataInterface.web;
 
-import java.util.List;
-import org.motechproject.mHealthDataInterface.bean.Location;
-import org.motechproject.mHealthDataInterface.bean.Patient;
-import org.motechproject.mHealthDataInterface.bean.Encounter;
-import org.motechproject.mHealthDataInterface.bean.PatientLocation;
-import org.motechproject.mHealthDataInterface.service.PatientService;
 import com.google.gson.Gson;
+import org.motechproject.mHealthDataInterface.bean.Encounter;
+import org.motechproject.mHealthDataInterface.bean.Patient;
+import org.motechproject.mHealthDataInterface.bean.PatientLocation;
+import org.motechproject.mHealthDataInterface.bean.Person.PreferredAddress;
+import org.motechproject.mHealthDataInterface.config.service.ApplicationSettingsService;
+import org.motechproject.mHealthDataInterface.service.PatientService;
 import org.motechproject.mHealthDataInterface.util.Constants;
 import org.motechproject.mHealthDataInterface.utility.mHealthException;
-import org.motechproject.mHealthDataInterface.bean.Person.PreferredAddress;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 @Controller
 public class PatientWS {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PatientWS.class);
+    ApplicationSettingsService applicationSettingsService;
+    private PatientService patientService;
 
-	private PatientService patientService;
-	
     public void setPatientService(PatientService patientService) {
 
         this.patientService = patientService;
     }
 
-    /**
-	 * 
-	 * get patient details 
-	 *
-	 */
-    
-    @RequestMapping(value = "/patientDetail/{patientId}", produces = "application/json")
-   	public @ResponseBody String getPatientDetail(@PathVariable String patientId) {
+    @Autowired
+    public void setApplicationSettingsService(ApplicationSettingsService applicationSettingsService) {
+        this.applicationSettingsService = applicationSettingsService;
+    }
 
-    	String returnVal = null;
+    /**
+     * get patient details
+     */
+
+    @RequestMapping(value = "/patientDetail/{patientId}", produces = "application/json")
+    public
+    @ResponseBody
+    String getPatientDetail(@PathVariable String patientId) {
+
+        String returnVal = null;
         Gson gson = new Gson();
         String json = null;
         Patient patient = null;
@@ -44,35 +54,39 @@ public class PatientWS {
                 patient = patientService.getPatientDetail(patientId);
             }
 
-       		if (patient != null) {
-       			json = gson.toJson(patient);
+            if (patient != null) {
+                json = gson.toJson(patient);
 
-       			returnVal = json;
-       		} else {
-                String msg = Constants.msg;
+                returnVal = json;
+            } else {
+                String msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
-       			returnVal = json;
-       		}
+                returnVal = json;
+            }
 
-    	} catch (mHealthException e) {
-            String msg = Constants.msg;
+        } catch (mHealthException e) {
+            String msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
+
+            returnVal = json;
+        } catch (Exception e) {
+            String msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
 
             returnVal = json;
-       	}
+        }
 
         return returnVal;
-    		
-   	}
+
+    }
 
     /**
-     *
      * get patients details by name
-     *
      */
     @RequestMapping(value = "/patientsDetailByName/{patientName}", produces = "application/json")
-    public @ResponseBody String getPatientsDetailByName(@PathVariable String patientName) {
+    public
+    @ResponseBody
+    String getPatientsDetailByName(@PathVariable String patientName) {
 
         String returnVal = null;
         Gson gson = new Gson();
@@ -89,14 +103,19 @@ public class PatientWS {
 
                 returnVal = json;
             } else {
-                String msg = Constants.msg;
+                String msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
             }
 
         } catch (mHealthException e) {
-            String msg = Constants.msg;
+            String msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
+            json = gson.toJson(msg);
+
+            returnVal = json;
+        } catch (Exception e) {
+            String msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
 
             returnVal = json;
@@ -105,60 +124,65 @@ public class PatientWS {
         return returnVal;
 
     }
-    
+
 
     /**
-	 * 
-	 * get patients location details
-	 *
-	 */
-    
+     * get patients location details
+     */
+
     @RequestMapping(value = "/patientVillage/{patientId}", produces = "application/json")
-   	public @ResponseBody String getPatientVillage(@PathVariable String patientId) {
-    	String returnVal = null;
+    public
+    @ResponseBody
+    String getPatientVillage(@PathVariable String patientId) {
+        String returnVal = null;
         Gson gson = new Gson();
         String json = null;
         PreferredAddress address = null;
         String msg = null;
 
-        try	{
+        try {
 
             if (patientService != null && patientId != null && patientId.length() > 0) {
                 address = patientService.getPatientVillage(patientId);
             }
 
-	   		if (address != null) {
-	   			json = gson.toJson(address);
+            if (address != null) {
+                json = gson.toJson(address);
 
-	   			returnVal = json;
-	   		} else {
-                msg = Constants.msg;
+                returnVal = json;
+            } else {
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
-	   		}
+            }
 
-		} catch (mHealthException e) {
-            msg = Constants.msg;
+        } catch (mHealthException e) {
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
 
             returnVal = json;
-		}
+        } catch (Exception e) {
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
+            json = gson.toJson(msg);
+
+            returnVal = json;
+        }
 
         return returnVal;
-   			
-   	}
-    
-    
+
+    }
+
+
     /**
-	 * 
-	 * get visits details of health workers of a patient
-	 *
-	 */
-    
+     * get visits details of health workers of a patient
+     */
+
     @RequestMapping(value = "/visitListByPatientId/{patientId}", produces = "application/json")
-   	public @ResponseBody String getVisitListByPatientId(@PathVariable String patientId) {
-    	String returnVal = null;
+    public
+    @ResponseBody
+    String getVisitListByPatientId(@PathVariable String patientId) {
+        String returnVal = null;
         Gson gson = new Gson();
         String json = null;
         String msg = null;
@@ -169,36 +193,41 @@ public class PatientWS {
                 list = patientService.getVisitListByPatientId(patientId);
             }
 
-	   		if (list != null && list.size() > 0) {
-	   			json = gson.toJson(list);
+            if (list != null && list.size() > 0) {
+                json = gson.toJson(list);
 
-	   			returnVal = json;
-	   		} else {
-                msg = Constants.msg;
+                returnVal = json;
+            } else {
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
-	   		}
+            }
 
-		} catch (mHealthException e) {
-            msg = Constants.msg;
+        } catch (mHealthException e) {
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
+            json = gson.toJson(msg);
+
+            returnVal = json;
+        } catch (Exception e) {
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
 
             returnVal = json;
         }
 
         return returnVal;
-   			
-   	}
+
+    }
 
     /**
-     *
      * get details of patient in a village
-     *
      */
 
     @RequestMapping(value = "/patientsByVillage/{village}", produces = "application/json")
-    public @ResponseBody String getPatientsByVillage(@PathVariable String village) {
+    public
+    @ResponseBody
+    String getPatientsByVillage(@PathVariable String village) {
         String returnVal = null;
         Gson gson = new Gson();
         String json = null;
@@ -215,14 +244,19 @@ public class PatientWS {
 
                 returnVal = json;
             } else {
-                msg = Constants.msg;
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
             }
 
         } catch (mHealthException e) {
-            msg = Constants.msg;
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
+            json = gson.toJson(msg);
+
+            returnVal = json;
+        } catch (Exception e) {
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
 
             returnVal = json;
@@ -233,12 +267,12 @@ public class PatientWS {
     }
 
     /**
-     *
      * get details of patient in a postal code .
-     *
      */
     @RequestMapping(value = "/patientsByPostalCode/{postalCode}", produces = "application/json")
-    public @ResponseBody String getPatientsByPostalCode(@PathVariable String postalCode) {
+    public
+    @ResponseBody
+    String getPatientsByPostalCode(@PathVariable String postalCode) {
         String returnVal = null;
         Gson gson = new Gson();
         String json = null;
@@ -255,14 +289,19 @@ public class PatientWS {
 
                 returnVal = json;
             } else {
-                msg = Constants.msg;
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
             }
 
         } catch (mHealthException e) {
-            msg = Constants.msg;
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
+            json = gson.toJson(msg);
+
+            returnVal = json;
+        } catch (Exception e) {
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
 
             returnVal = json;

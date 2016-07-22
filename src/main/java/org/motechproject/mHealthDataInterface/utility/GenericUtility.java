@@ -2,7 +2,7 @@ package org.motechproject.mHealthDataInterface.utility;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.motechproject.mHealthDataInterface.utility.mHealthException;
+import org.motechproject.mHealthDataInterface.config.bean.ApplicationSettings;
 
 
 /**
@@ -13,9 +13,9 @@ public class GenericUtility {
     /**
      * get data as string
      */
-    public static String getJsonObject(String path) throws mHealthException {
+    public static String getJsonObject(String path, ApplicationSettings applicationSettings) throws mHealthException {
 
-        RestInvoker restInvoker = new RestInvoker();
+        RestInvoker restInvoker = new RestInvoker(applicationSettings);
         String json = restInvoker.getDataFromServer(path);
 
         return json;
