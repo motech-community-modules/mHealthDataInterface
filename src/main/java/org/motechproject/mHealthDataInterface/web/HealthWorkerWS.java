@@ -1,21 +1,23 @@
 package org.motechproject.mHealthDataInterface.web;
 
+import com.google.gson.Gson;
 import org.motechproject.mHealthDataInterface.bean.Provider;
+import org.motechproject.mHealthDataInterface.config.service.ApplicationSettingsService;
 import org.motechproject.mHealthDataInterface.service.HealthWorkerService;
-import java.util.List;
-
 import org.motechproject.mHealthDataInterface.util.Constants;
+import org.motechproject.mHealthDataInterface.utility.mHealthException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.motechproject.mHealthDataInterface.utility.mHealthException;
-import com.google.gson.Gson;
+
+import java.util.List;
 
 
 @Controller
 public class HealthWorkerWS {
-
+    ApplicationSettingsService applicationSettingsService;
     private HealthWorkerService healthWorkerService;
 
     public void setHealthWorkerService(HealthWorkerService healthWorkerService) {
@@ -23,7 +25,10 @@ public class HealthWorkerWS {
         this.healthWorkerService = healthWorkerService;
     }
 
-    
+    @Autowired
+    public void setApplicationSettingsService(ApplicationSettingsService applicationSettingsService) {
+        this.applicationSettingsService = applicationSettingsService;
+    }
     /**
 	 * 
 	 * verify healthworker details
@@ -47,14 +52,14 @@ public class HealthWorkerWS {
                 }
 
             } else {
-                msg = Constants.msg;
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);;
                 json = gson.toJson(msg);
 
                 return json;
             }
 
     	} catch (mHealthException e) {
-    		msg = Constants.msg;
+    		msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);;
     	}
 
         json = gson.toJson(msg);
@@ -88,13 +93,13 @@ public class HealthWorkerWS {
 
                 returnVal = json;
             } else {
-                msg = Constants.msg;
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
             }
         } catch(mHealthException e) {
-            msg = Constants.msg;
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
             json = gson.toJson(msg);
             returnVal = json;
         }
@@ -127,13 +132,13 @@ public class HealthWorkerWS {
 
                 returnVal = json;
             } else {
-                msg = Constants.msg;
+                msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);
                 json = gson.toJson(msg);
 
                 returnVal = json;
             }
         } catch(mHealthException e) {
-            msg = Constants.msg;
+            msg = applicationSettingsService.getSettingsValue(Constants.ERROR_MSG_CONFIG_KEY);;
             json = gson.toJson(msg);
             returnVal = json;
         }

@@ -1,16 +1,28 @@
 package org.motechproject.mHealthDataInterface.service.impl;
 
-import java.util.List;
-
-import org.motechproject.mHealthDataInterface.bean.*;
+import org.motechproject.mHealthDataInterface.bean.Encounter;
+import org.motechproject.mHealthDataInterface.bean.Patient;
+import org.motechproject.mHealthDataInterface.bean.PatientLocation;
+import org.motechproject.mHealthDataInterface.bean.Person.PreferredAddress;
+import org.motechproject.mHealthDataInterface.config.service.ApplicationSettingsService;
 import org.motechproject.mHealthDataInterface.service.PatientService;
 import org.motechproject.mHealthDataInterface.utility.Utility;
 import org.motechproject.mHealthDataInterface.utility.mHealthException;
-import org.motechproject.mHealthDataInterface.bean.Person.PreferredAddress;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class PatientServiceImpl implements PatientService {
 
-	/**
+
+    ApplicationSettingsService applicationSettingsService;
+
+    @Autowired
+    public void setApplicationSettingsService(ApplicationSettingsService applicationSettingsService) {
+        this.applicationSettingsService = applicationSettingsService;
+    }
+
+    /**
 	 * 
 	 * get patient details
 	 *
@@ -18,7 +30,7 @@ public class PatientServiceImpl implements PatientService {
 	@Override
 	public Patient getPatientDetail(String patientId) throws mHealthException {
 
-		Utility utility = new Utility();
+		Utility utility = new Utility(applicationSettingsService.getApplicationSettings());
         Patient patient = utility.getPatientDetail(patientId);
 		
 		return patient;
@@ -32,7 +44,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public List<Patient> getPatientsDetailByName(String patientName) throws mHealthException {
 
-        Utility utility = new Utility();
+        Utility utility = new Utility(applicationSettingsService.getApplicationSettings());
         List<Patient> patient = utility.getPatientsDetailByName(patientName);
 
         return patient;
@@ -47,7 +59,7 @@ public class PatientServiceImpl implements PatientService {
 	@Override
 	public PreferredAddress getPatientVillage(String patientId) throws mHealthException {
 
-		Utility utility = new Utility();
+		Utility utility = new Utility(applicationSettingsService.getApplicationSettings());
         PreferredAddress address = utility.getPatientVillage(patientId);
 
 		return address;
@@ -62,7 +74,7 @@ public class PatientServiceImpl implements PatientService {
 	@Override
 	public List<Encounter> getVisitListByPatientId(String patientId) throws mHealthException {
 
-		Utility utility = new Utility();
+		Utility utility = new Utility(applicationSettingsService.getApplicationSettings());
 		List<Encounter> visits = utility.getVisitListByPatientId(patientId);
 
 		return visits;
@@ -76,8 +88,8 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public List<PatientLocation> getPatientsByVillage(String village) throws mHealthException {
-
-        Utility utility = new Utility();
+        System.out.println("mHealthDataInterface.openmrs.dbUrl: " + applicationSettingsService.getSettingsValue("mHealthDataInterface.openmrs.dbUrl"));
+        Utility utility = new Utility(applicationSettingsService.getApplicationSettings());
         List<PatientLocation> details = utility.getPatientsByVillage(village);
 
         return details;
@@ -92,7 +104,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public List<PatientLocation> getPatientsByPostalCode(String postalCode) throws mHealthException {
 
-        Utility utility = new Utility();
+        Utility utility = new Utility(applicationSettingsService.getApplicationSettings());
         List<PatientLocation> details = utility.getPatientsByPostalCode(postalCode);
 
         return details;
